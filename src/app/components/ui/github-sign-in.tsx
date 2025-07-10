@@ -1,6 +1,6 @@
 import { signIn } from "@/auth"
 
-export function SignIn() {
+export function GithubSignIn() {
 	return (
 		<form
 			action={async () => {
