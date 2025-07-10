@@ -1,16 +1,6 @@
 import NextAuth from "next-auth"
-import Reddit from "next-auth/providers/reddit"
+import GitHub from "next-auth/providers/github"
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-	providers: [
-		Reddit({
-			clientId: process.env.REDDIT_CLIENT_ID,
-			clientSecret: process.env.REDDIT_CLIENT_SECRET,
-			authorization: {
-				params: {
-					duration: "permanent",
-				},
-			},
-		}),
-	],
-}) 
+export const { handlers, auth, signIn, signOut } = NextAuth({
+	providers: [GitHub],
+})
