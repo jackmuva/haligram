@@ -13,8 +13,8 @@ export const Dashboard = ({ session }: { session: Session }) => {
         <InstructionsPanel />
         <KnowledgePanel />
       </div>
-      <div className="border border-foreground/20 bg-background w-full md:w-2/3 ml-4 rounded-sm">
-        <TopicFeed session={session} />
+      <div className="w-full md:w-2/3 ml-4">
+        <TopicFeed />
       </div>
     </div>
   );
