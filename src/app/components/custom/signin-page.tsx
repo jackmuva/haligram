@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { GithubSignIn } from "./ui/github-sign-in";
+import { GithubSignIn } from "./github-sign-in";
 
 export const SigninPage = () => {
   return (
