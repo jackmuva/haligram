@@ -12,7 +12,7 @@ export function GithubSignIn() {
 		>
 			<Button type="submit">
 				<Image src={"/github-logo.png"} alt="github logo" height={20} width={20} />
-				<p>Sign in</p>
+				<p>sign in</p>
 			</Button>
 		</form>
 	)

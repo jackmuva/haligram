@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { RedditFeed } from "./reddit/reddit-feed";
+import { RedditPanel } from "./reddit/reddit-panel";
 
 export const supportedChannels = ["reddit"];
 
-export const TopicFeed = () => {
+export const TopicPanel = () => {
   const [activeChannel, setActiveChannel] = useState<string>(supportedChannels[0]);
 
   return (
@@ -21,7 +21,7 @@ export const TopicFeed = () => {
         })}
       </div>
       {activeChannel === "reddit" ?
-        <RedditFeed /> :
+        <RedditPanel /> :
         <></>}
     </div>
   );

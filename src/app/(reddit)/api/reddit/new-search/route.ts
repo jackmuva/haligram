@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
-import { getUser } from "@/db/queries";
+import { getUser, upsertRedditSearch } from "@/db/queries";
+import { NextRequest } from "next/server";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
 	const session = await auth();
 	if (!session || !session.user) {
 		return Response.json({
@@ -16,5 +17,7 @@ export async function POST() {
 
 	}
 	const user = await getUser(session.user.email, session.user.name);
-	return Response.json({ user: user[0] })
+	const body: { searchTerm: string } = await req.json();
+	const searches = await upsertRedditSearch(user[0].email, body.searchTerm);
+	return Response.json({ searches: searches })
 }

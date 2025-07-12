@@ -4,7 +4,7 @@ import { createClient } from '@libsql/client';
 import { redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
 import { eq } from 'drizzle-orm';
 
-let db = drizzle(
+const db = drizzle(
 	createClient({
 		url: process.env.TURSO_DATABASE_URL!,
 		authToken: process.env.TURSO_AUTH_TOKEN ?? "",
@@ -122,7 +122,10 @@ export const upsertRedditSearch = async (email: string, searchTerm: string): Pro
 		} else {
 			const searches: Array<string> = pastSearch[0].searches!.terms;
 			searches.unshift(searchTerm);
-			searches.length > 10 ? searches.pop() : searches;
+			if (searches.length > 10) {
+				searches.pop();
+			}
+
 			const newSearch = await db.update(redditSearch)
 				.set({
 					searches: { terms: searches }

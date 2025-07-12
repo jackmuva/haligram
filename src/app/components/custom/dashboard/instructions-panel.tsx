@@ -8,7 +8,7 @@ export const InstructionsPanel = () => {
           ${!active ? "flex-1 hover:flex-4" : "flex-4"}`}
       onClick={() => setActive((prev) => !prev)}>
       <h1 className="font-semibold text-blue-700 dark:text-blue-300 absolute -top-3 left-3 z-10 bg-background px-1">
-        Haligram Instructions
+        HALIGRAM instructions
       </h1>
     </div>
 

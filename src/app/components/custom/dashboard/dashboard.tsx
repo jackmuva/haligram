@@ -2,7 +2,7 @@ import { Session } from "next-auth";
 import { Navbar } from "../navbar";
 import { InstructionsPanel } from "./instructions-panel";
 import { KnowledgePanel } from "./knowledge-panel";
-import { TopicFeed } from "./topic-feed";
+import { TopicPanel } from "./topic-panel";
 
 export const Dashboard = ({ session }: { session: Session }) => {
 
@@ -14,7 +14,7 @@ export const Dashboard = ({ session }: { session: Session }) => {
         <KnowledgePanel />
       </div>
       <div className="w-full md:w-2/3 ml-4">
-        <TopicFeed />
+        <TopicPanel />
       </div>
     </div>
   );

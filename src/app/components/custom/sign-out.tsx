@@ -10,7 +10,7 @@ export function SignOut() {
 			}}
 		>
 			<Button type="submit">
-				Sign Out
+				sign out
 			</Button>
 		</form>
 	)
