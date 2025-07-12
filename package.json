@@ -6,15 +6,21 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate": "npx drizzle-kit generate",
+    "migrate": "npx drizzle-kit migrate"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.9",
     "@useparagon/connect": "^2.0.6",
+    "dotenv": "^17.2.0",
+    "drizzle-orm": "^0.44.2",
     "jose": "^6.0.11",
     "next": "15.3.5",
     "next-auth": "^5.0.0-beta.29",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "swr": "^2.3.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -22,9 +28,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

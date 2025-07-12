@@ -10,7 +10,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = "border border-foreground rounded-sm flex w-fit items-center space-x-2"
 
     const variantStyles = {
-      default: "bg-stone-100/80 hover:bg-stone-100/10 text-slate-900 border-stone-200",
+      default: "bg-stone-100 hover:bg-stone-100/10 text-slate-900 border-stone-200",
       outline: "bg-transparent hover:bg-stone-100/50 text-slate-900 border-stone-300",
       ghost: "bg-transparent hover:bg-stone-100/50 text-slate-900 border-transparent"
     }
