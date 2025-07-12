@@ -13,6 +13,7 @@ export const redditToken = sqliteTable("RedditTokens", {
 	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
 	userId: text("userId").references(() => user.id),
 	accessToken: text("accessToken").notNull(),
+	refreshToken: text("refreshToken").notNull(),
 	updatedAt: text("updatedAt").$defaultFn(() => (new Date()).toUTCString()),
 });
 export type RedditToken = InferSelectModel<typeof redditToken>
