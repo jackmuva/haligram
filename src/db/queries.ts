@@ -55,7 +55,7 @@ export const getRedditTokenByEmail = async (email: string): Promise<Array<Reddit
 
 }
 
-export const upsertToken = async (email: string, accessToken: string, refreshToken: string) => {
+export const upsertToken = async (email: string, accessToken: string, refreshToken: string): Promise<Array<RedditToken>> => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
@@ -64,19 +64,22 @@ export const upsertToken = async (email: string, accessToken: string, refreshTok
 		}
 		const existingToken = await getRedditTokenByEmail(email);
 		if (existingToken.length === 0) {
-			await db.insert(redditToken).values({
+			const token = await db.insert(redditToken).values({
 				userId: selectedUser[0].id,
 				accessToken: accessToken,
 				refreshToken: refreshToken,
-			});
+			}).returning();
+			return token;
 		} else {
-			await db.update(redditToken)
+			const token = await db.update(redditToken)
 				.set({
 					accessToken: accessToken,
 					refreshToken: refreshToken,
 					updatedAt: (new Date()).toUTCString(),
 				})
-				.where(eq(redditToken.userId, selectedUser[0].id));
+				.where(eq(redditToken.userId, selectedUser[0].id))
+				.returning();
+			return token;
 		}
 
 	} catch (err) {
