@@ -5,3 +5,22 @@ export const fetcher = async (url: string) => {
 	}
 	return res.json();
 };
+
+export const callOAuthAPI = async ({ apiCall, refresh, purge }: {
+	apiCall: () => Promise<Response>,
+	refresh: () => Promise<any>,
+	purge: () => Promise<void>
+}): Promise<Response | null> => {
+	let response = await apiCall();
+	if (!response.ok) {
+		const newToken = await refresh();
+		console.log("refreshing token: ", newToken);
+		response = await apiCall();
+		if (!response.ok) {
+			console.log("deleting credentials");
+			await purge();
+			return null;
+		}
+	}
+	return response;
+}

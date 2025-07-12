@@ -54,6 +54,21 @@ export const getRedditTokenByEmail = async (email: string): Promise<Array<Reddit
 
 }
 
+export const deleteRedditTokenByEmail = async (email: string) => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("no token for user");
+			return;
+		}
+		await db.delete(redditToken).where(eq(redditToken.userId, selectedUser[0].id));
+	} catch (err) {
+		console.error('unable to delete reddit token: ', err);
+		throw err;
+	}
+
+}
+
 export const upsertToken = async (email: string, accessToken: string, refreshToken: string): Promise<Array<RedditToken>> => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
