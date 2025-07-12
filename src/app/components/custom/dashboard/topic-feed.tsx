@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { RedditFeed } from "./reddit-feed";
+import { RedditFeed } from "./reddit/reddit-feed";
 
 export const supportedChannels = ["reddit"];
 

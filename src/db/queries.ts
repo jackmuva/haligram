@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
-import { RedditToken, redditToken, User, user } from './schema';
+import { redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
 import { eq } from 'drizzle-orm';
 
 let db = drizzle(
@@ -43,11 +43,10 @@ export const getRedditTokenByEmail = async (email: string): Promise<Array<Reddit
 		if (selectedUser.length === 0) {
 			console.error("no token for user");
 			return [];
-		} else {
-			const token = await db.select().from(redditToken)
-				.where(eq(redditToken.userId, selectedUser[0].id));
-			return token;
 		}
+		const token = await db.select().from(redditToken)
+			.where(eq(redditToken.userId, selectedUser[0].id));
+		return token;
 	} catch (err) {
 		console.error("Failed to get reddit token by email", err);
 		throw err;
@@ -84,6 +83,56 @@ export const upsertToken = async (email: string, accessToken: string, refreshTok
 
 	} catch (err) {
 		console.error("Failed to upsert reddit token", err);
+		throw err;
+	}
+}
+
+export const getRedditSearchByEmail = async (email: string): Promise<Array<RedditSearch>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("no token for user");
+			return [];
+		}
+		const search = await db.select().from(redditSearch)
+			.where(eq(redditSearch.userId, selectedUser[0].id));
+		return search;
+
+	} catch (err) {
+		console.error("failed to get reddit searches", err);
+		throw err;
+	}
+}
+
+
+export const upsertRedditSearch = async (email: string, searchTerm: string): Promise<Array<RedditSearch>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("no token for user");
+			return [];
+		}
+		const pastSearch = await getRedditSearchByEmail(email);
+		if (pastSearch.length === 0) {
+			const search = await db.insert(redditSearch).values({
+				userId: selectedUser[0].id,
+				searches: { terms: [searchTerm] },
+			}).returning();
+			return search;
+		} else {
+			const searches: Array<string> = pastSearch[0].searches!.terms;
+			searches.unshift(searchTerm);
+			searches.length > 10 ? searches.pop() : searches;
+			const newSearch = await db.update(redditSearch)
+				.set({
+					searches: { terms: searches }
+				})
+				.where(eq(redditSearch.userId, selectedUser[0].id))
+				.returning();
+			return newSearch;
+		}
+	} catch (err) {
+		console.error("Failed to upsert reddit search", err);
 		throw err;
 	}
 }
