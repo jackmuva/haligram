@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
-import { redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
+import { Instructions, instructions, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
 import { and, eq } from 'drizzle-orm';
 
 const db = drizzle(
@@ -136,6 +136,53 @@ export const upsertRedditSearch = async (email: string, searchTerm: string): Pro
 			return search;
 		}
 		return [];
+	} catch (err) {
+		console.error("Failed to upsert reddit search", err);
+		throw err;
+	}
+}
+
+export const getInstructionsByEmail = async (email: string): Promise<Array<Instructions>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("no token for user");
+			return [];
+		}
+		const instruction = await db.select().from(instructions)
+			.where(eq(instructions.userId, selectedUser[0].id));
+		return instruction;
+	} catch (err) {
+		console.error("failed to get reddit searches", err);
+		throw err;
+	}
+}
+
+
+export const upsertInstructions = async (email: string, prompt: string, context: string): Promise<Array<Instructions>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("no token for user");
+			return [];
+		}
+		const lastInstr = await db.select().from(instructions)
+			.where(eq(instructions.userId, selectedUser[0].id));
+		if (lastInstr.length === 0) {
+			const instr = await db.insert(instructions).values({
+				userId: selectedUser[0].id,
+				systemPrompt: prompt,
+				productContext: context,
+			}).returning();
+			return instr;
+		} else {
+			const instr = await db.update(instructions).set({
+				systemPrompt: prompt,
+				productContext: context,
+			}).where(eq(instructions.userId, selectedUser[0].id))
+				.returning();
+			return instr;
+		}
 	} catch (err) {
 		console.error("Failed to upsert reddit search", err);
 		throw err;

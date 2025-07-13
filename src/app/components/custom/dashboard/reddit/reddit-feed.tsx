@@ -31,7 +31,6 @@ export function RedditFeed() {
       setFeedState((prev) => ({ ...prev, searchTerm: "" }));
     }
   }
-  console.log(data);
 
   return (
     <div className="w-full flex flex-col pt-2 space-y-4">
