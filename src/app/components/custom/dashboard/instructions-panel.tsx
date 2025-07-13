@@ -8,7 +8,7 @@ export const InstructionsPanel = ({ active, setActive }:
   { active: "instructions" | "knowledge" | "", setActive: (x: "instructions" | "knowledge" | "") => void }) => {
   const [instr, setInstr] = useState<{ prompt: string, context: string }>
     ({ prompt: "", context: "" });
-  const { data, mutate } = useSWR(`/api/instructions`, fetcher)
+  const { data, mutate, isLoading } = useSWR(`/api/instructions`, fetcher)
 
   const submitInstr = async () => {
     if (!instr.context) {
@@ -25,6 +25,7 @@ export const InstructionsPanel = ({ active, setActive }:
     });
     const res = await req.json();
     if (res) {
+      //@ts-ignore
       toast(<Notification />, {
         data: { message: "saved" },
         closeButton: false,
@@ -56,10 +57,14 @@ export const InstructionsPanel = ({ active, setActive }:
       <div className="flex flex-col space-y-4 mt-4">
         <textarea rows={4} placeholder="system prompt for HALIGRAM to create comments"
           className="outline-none border border-foreground/20 rounded-sm px-1 bg-background-muted"
-          onChange={(e) => setInstr((prev) => ({ ...prev, prompt: e.target.value }))} />
+          onChange={(e) => setInstr((prev) => ({ ...prev, prompt: e.target.value }))}
+          value={!isLoading && data.instructions.length > 0 ? data.instructions[0].systemPrompt : ""}>
+        </textarea>
         <textarea id="context" rows={10} placeholder="context on your product - description, benefits, use cases, examples"
           className="outline-none border border-foreground/20 rounded-sm px-1 bg-background-muted"
-          onChange={(e) => setInstr((prev) => ({ ...prev, context: e.target.value }))}></textarea>
+          onChange={(e) => setInstr((prev) => ({ ...prev, context: e.target.value }))}
+          value={!isLoading && data.instructions.length > 0 ? data.instructions[0].productContext : ""}>
+        </textarea>
       </div>
     </div>
 
