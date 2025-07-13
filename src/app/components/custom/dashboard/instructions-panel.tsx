@@ -1,6 +1,8 @@
 import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { Notification } from "../../ui/notification";
 
 export const InstructionsPanel = ({ active, setActive }:
   { active: "instructions" | "knowledge" | "", setActive: (x: "instructions" | "knowledge" | "") => void }) => {
@@ -23,7 +25,13 @@ export const InstructionsPanel = ({ active, setActive }:
     });
     const res = await req.json();
     if (res) {
-      mutate()
+      toast(<Notification />, {
+        data: { message: "saved" },
+        closeButton: false,
+        customProgressBar: true,
+        position: 'top-left',
+      });
+      mutate();
     }
   }
 
@@ -32,6 +40,7 @@ export const InstructionsPanel = ({ active, setActive }:
           ease-in-out transition-all overflow-y-scroll 
           ${active === "instructions" ? "flex-4" : "flex-1 hover:flex-4"}`}
       onClick={() => setActive("instructions")}>
+      <ToastContainer />
       <div className="flex w-full justify-between items-center">
         <h1 className="font-semibold text-blue-700 dark:text-blue-300  px-1">
           HALIGRAM instructions
