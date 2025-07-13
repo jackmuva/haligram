@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getRedditSearchByEmail, getUser } from "@/db/queries";
+import { getRedditSearchesByEmail, getUser } from "@/db/queries";
 
 export async function GET() {
 	const session = await auth();
@@ -16,6 +16,6 @@ export async function GET() {
 
 	}
 	const user = await getUser(session.user.email, session.user.name);
-	const searches = await getRedditSearchByEmail(user[0].email);
+	const searches = await getRedditSearchesByEmail(user[0].email);
 	return Response.json({ searches: searches })
 }

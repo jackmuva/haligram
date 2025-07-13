@@ -21,6 +21,15 @@ export type RedditToken = InferSelectModel<typeof redditToken>
 export const redditSearch = sqliteTable("RedditSearch", {
 	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
 	userId: text("userId").references(() => user.id).notNull(),
-	searches: text("searches", { mode: "json" }).$type<{ terms: Array<string> }>(),
+	search: text("search").notNull(),
+	status: text("status").$defaultFn(() => "initializing").notNull(),
 });
 export type RedditSearch = InferSelectModel<typeof redditSearch>
+
+export const instructions = sqliteTable("Instructions", {
+	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+	userId: text("userId").references(() => user.id).notNull(),
+	systemPrompt: text("systemPrompt").$defaultFn(() => "you help comment on reddit threads about the product"),
+	productContext: text("productContext").notNull(),
+});
+export type Instructions = InferSelectModel<typeof instructions>

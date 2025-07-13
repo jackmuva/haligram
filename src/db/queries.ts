@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import { redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 const db = drizzle(
 	createClient({
@@ -102,7 +102,7 @@ export const upsertToken = async (email: string, accessToken: string, refreshTok
 	}
 }
 
-export const getRedditSearchByEmail = async (email: string): Promise<Array<RedditSearch>> => {
+export const getRedditSearchesByEmail = async (email: string): Promise<Array<RedditSearch>> => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
@@ -112,7 +112,6 @@ export const getRedditSearchByEmail = async (email: string): Promise<Array<Reddi
 		const search = await db.select().from(redditSearch)
 			.where(eq(redditSearch.userId, selectedUser[0].id));
 		return search;
-
 	} catch (err) {
 		console.error("failed to get reddit searches", err);
 		throw err;
@@ -127,28 +126,16 @@ export const upsertRedditSearch = async (email: string, searchTerm: string): Pro
 			console.error("no token for user");
 			return [];
 		}
-		const pastSearch = await getRedditSearchByEmail(email);
+		const pastSearch = await db.select().from(redditSearch)
+			.where(and(eq(redditSearch.userId, selectedUser[0].id), eq(redditSearch.search, searchTerm)));
 		if (pastSearch.length === 0) {
 			const search = await db.insert(redditSearch).values({
 				userId: selectedUser[0].id,
-				searches: { terms: [searchTerm] },
+				search: searchTerm,
 			}).returning();
 			return search;
-		} else {
-			const searches: Array<string> = pastSearch[0].searches!.terms;
-			searches.unshift(searchTerm);
-			if (searches.length > 10) {
-				searches.pop();
-			}
-
-			const newSearch = await db.update(redditSearch)
-				.set({
-					searches: { terms: searches }
-				})
-				.where(eq(redditSearch.userId, selectedUser[0].id))
-				.returning();
-			return newSearch;
 		}
+		return [];
 	} catch (err) {
 		console.error("Failed to upsert reddit search", err);
 		throw err;
