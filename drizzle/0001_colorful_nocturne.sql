@@ -1,1 +1,0 @@
-ALTER TABLE `RedditTokens` ADD `refreshToken` text NOT NULL;

@@ -1,0 +1,10 @@
+const CHUNK_PUBLIC_PATH = "server/app/(reddit)/api/reddit/search/route.js";
+const runtime = require("../../../../../chunks/[turbopack]_runtime.js");
+runtime.loadChunk("server/chunks/node_modules_next_1361c2fb._.js");
+runtime.loadChunk("server/chunks/node_modules_@auth_core_595f012e._.js");
+runtime.loadChunk("server/chunks/node_modules_jose_dist_webapi_69d735b8._.js");
+runtime.loadChunk("server/chunks/node_modules_239ffd8f._.js");
+runtime.loadChunk("server/chunks/[root-of-the-server]__40620f4f._.js");
+runtime.getOrInstantiateRuntimeModule("[project]/.next-internal/server/app/(reddit)/api/reddit/search/route/actions.js [app-rsc] (server actions loader, ecmascript)", CHUNK_PUBLIC_PATH);
+runtime.getOrInstantiateRuntimeModule("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/src/app/(reddit)/api/reddit/search/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)", CHUNK_PUBLIC_PATH);
+module.exports = runtime.getOrInstantiateRuntimeModule("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/src/app/(reddit)/api/reddit/search/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)", CHUNK_PUBLIC_PATH).exports;

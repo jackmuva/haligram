@@ -1,0 +1,28 @@
+{
+  "node": {
+    "00afad88ec0a4f9349ce8cd70af177fae6f3ab5429": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/components/custom/github-sign-in.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/components/custom/sign-out.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    },
+    "004cc0642386db3fdd5d7e974808448037c03afda4": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/components/custom/github-sign-in.tsx [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/components/custom/sign-out.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "ipxS+s842OL/Wr0oExQaTVo2SStGPp1MNZiCJpQjdCo="
+}
