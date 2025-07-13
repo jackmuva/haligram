@@ -1,3 +1,0 @@
-{
-  "/(auth)/api/oauth/reddit/route": "app/(auth)/api/oauth/reddit/route.js"
-}

@@ -1,3 +1,0 @@
-{
-  "/(auth)/api/oauth/reddit/callback/route": "app/(auth)/api/oauth/reddit/callback/route.js"
-}
