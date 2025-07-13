@@ -12,5 +12,5 @@ npm run migrate
 
 ### trigger
 ```
-npx trigger.dev@latest dev
+npm run trigger
 ```

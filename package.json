@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "generate": "npx drizzle-kit generate",
-    "migrate": "npx drizzle-kit migrate"
+    "migrate": "npx drizzle-kit migrate",
+    "trigger": "npx trigger.dev@latest dev"
   },
   "dependencies": {
     "@libsql/client": "^0.15.9",
