@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { InferSelectModel } from "drizzle-orm";
 
 export const user = sqliteTable("users", {
@@ -23,6 +23,7 @@ export const redditSearch = sqliteTable("RedditSearch", {
 	userId: text("userId").references(() => user.id).notNull(),
 	search: text("search").notNull(),
 	status: text("status").$defaultFn(() => "initializing").notNull(),
+	score: int("score"),
 });
 export type RedditSearch = InferSelectModel<typeof redditSearch>
 

@@ -41,7 +41,7 @@ export const getRedditTokenByEmail = async (email: string): Promise<Array<Reddit
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return [];
 		}
 		const token = await db.select().from(redditToken)
@@ -58,7 +58,7 @@ export const deleteRedditTokenByEmail = async (email: string) => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return;
 		}
 		await db.delete(redditToken).where(eq(redditToken.userId, selectedUser[0].id));
@@ -73,7 +73,7 @@ export const upsertToken = async (email: string, accessToken: string, refreshTok
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return [];
 		}
 		const existingToken = await getRedditTokenByEmail(email);
@@ -106,7 +106,7 @@ export const getRedditSearchesByEmail = async (email: string): Promise<Array<Red
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return [];
 		}
 		const search = await db.select().from(redditSearch)
@@ -123,7 +123,7 @@ export const upsertRedditSearch = async (email: string, searchTerm: string): Pro
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return [];
 		}
 		const pastSearch = await db.select().from(redditSearch)
@@ -142,11 +142,29 @@ export const upsertRedditSearch = async (email: string, searchTerm: string): Pro
 	}
 }
 
+export const updateRedditSearchScore = async (email: string, searchTerm: string, score: number): Promise<Array<RedditSearch>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("user not found");
+			return [];
+		}
+		const updatedSearch = await db.update(redditSearch).set({
+			score: score
+		}).returning();
+		return updatedSearch;
+
+	} catch (err) {
+		console.error("Failed to score Reddit Search", err);
+		throw err;
+	}
+}
+
 export const getInstructionsByEmail = async (email: string): Promise<Array<Instructions>> => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return [];
 		}
 		const instruction = await db.select().from(instructions)
@@ -163,7 +181,7 @@ export const upsertInstructions = async (email: string, prompt: string, context:
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
-			console.error("no token for user");
+			console.error("user not found");
 			return [];
 		}
 		const lastInstr = await db.select().from(instructions)

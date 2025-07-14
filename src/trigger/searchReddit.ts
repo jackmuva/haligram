@@ -27,6 +27,8 @@ export const redditSearch = task({
       body.json.data.children.map((post: any) => {
         return {
           payload: {
+            userEmail: payload.email,
+            searchTerm: payload.search,
             title: post.data.title,
             subreddit: post.data.subreddit,
             name: post.data.name,

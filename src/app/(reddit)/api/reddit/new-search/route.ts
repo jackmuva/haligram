@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getUser, upsertRedditSearch } from "@/db/queries";
+import { getInstructionsByEmail, getUser, upsertRedditSearch } from "@/db/queries";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { NextRequest } from "next/server";
 
@@ -20,9 +20,12 @@ export async function POST(req: NextRequest) {
 	const user = await getUser(session.user.email, session.user.name);
 	const body: { searchTerm: string } = await req.json();
 	const searches = await upsertRedditSearch(user[0].email, body.searchTerm);
+	const instructions = await getInstructionsByEmail(user[0].email);
 
-	const handle = await tasks.trigger("redditPostSearch", { email: user[0].email, search: body.searchTerm });
-	console.log("reddit search: ", handle);
+	if (instructions.length === 0 || !instructions[0].productContext) {
+		return Response.json({ status: 500, message: "please provide context on your product" })
+	}
 
+	await tasks.trigger("redditPostSearch", { email: user[0].email, search: body.searchTerm });
 	return Response.json({ searches: searches })
 }

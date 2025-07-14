@@ -1,19 +1,46 @@
-const geminiMessage = {
-  system_instruction: {
-    parts: [{
-      text: `You are an assistant that teaches user how to use macOS terminal commands. 
-                You have 5 rules:
-                1) If the user is trying to perform an action, responses must be in a stringified json format: {command: <macOS terminal command>, explanation: <explanation for how the macOS terminal command works>} so it can be easily parsed with JSON.parse()
-                2) If the user is asking a question, responses must be in a stringified json format:{explanation: <answer to the question>}
-                3) If the user is trying to perform an action or asking a question with a specific CLI tool (i.e. git, vercel, tmux) and you need more information on that CLI tool, return a response with the stringified json: {cli_tool: <cli tool name>}
-                4) All responses must either be in the json format from rule 1 or rule 2
-                5) Do not delete files or directories, or use any rm command; you can tell a user how to delete, but only explain`
+export const geminiReply = (
+  { systemPrompt, productContext, message }:
+    { systemPrompt: string, productContext: string, message: string }
+) => {
+  const geminiMessage = {
+    system_instruction: {
+      parts: [{
+        text: `You are a assistant that comes up with replies for posts and comments to help promote the user's product.\n
+              Here is some context on the user's product: \n
+              ${productContext} \n
+              Additional instructions: ${systemPrompt}`
+      }]
+    },
+    contents: [{
+      parts: [{
+        text: `Draft a reply to the following comment with information about the user's product.
+               Include information, benefits, and examples.\n
+              Comment: ${message}`
+      }]
     }]
-  },
-  contents: [{
-    parts: [{
-      text: prompt
-    }]
-  }]
+  }
+  return geminiMessage;
 }
 
+export const geminiScoreRelevancy = (
+  { productContext, message }:
+    { productContext: string, message: string }
+) => {
+  const geminiMessage = {
+    system_instruction: {
+      parts: [{
+        text: `You are a assistant that helps the user determine if the user's product is relevant to the comment made.
+              Here is some context on the user's product: \n
+              ${productContext}`
+      }]
+    },
+    contents: [{
+      parts: [{
+        text: `On a scale from 1-5, score how relevant the user's product is to the comment.\n
+              Return the score with the following stringified json format: {score: <score>}.
+              Comment: ${message}`
+      }]
+    }]
+  }
+  return geminiMessage;
+}
