@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
-import { Instructions, instructions, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
+import { Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
 import { and, eq } from 'drizzle-orm';
 
 const db = drizzle(
@@ -118,6 +118,22 @@ export const getRedditSearchesByEmail = async (email: string): Promise<Array<Red
 	}
 }
 
+export const getRedditSearchesByEmailAndSearch = async (email: string, searchTerm: string): Promise<Array<RedditSearch>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("user not found");
+			return [];
+		}
+		const search = await db.select().from(redditSearch)
+			.where(and(eq(redditSearch.userId, selectedUser[0].id),
+				eq(redditSearch.search, searchTerm)));
+		return search;
+	} catch (err) {
+		console.error("failed to get reddit searches", err);
+		throw err;
+	}
+}
 
 export const upsertRedditSearch = async (email: string, searchTerm: string): Promise<Array<RedditSearch>> => {
 	try {
@@ -142,20 +158,19 @@ export const upsertRedditSearch = async (email: string, searchTerm: string): Pro
 	}
 }
 
-export const updateRedditSearchScore = async (email: string, searchTerm: string, score: number): Promise<Array<RedditSearch>> => {
+export const updateRedditSearchStatus = async (searchId: string, status: string): Promise<Array<RedditSearch>> => {
 	try {
-		const selectedUser = await db.select().from(user).where(eq(user.email, email));
-		if (selectedUser.length === 0) {
-			console.error("user not found");
-			return [];
+		let search = await db.select().from(redditSearch).where(eq(redditSearch.id, searchId));
+		if (search.length === 0) {
+			console.error("search not found");
+			return []
 		}
-		const updatedSearch = await db.update(redditSearch).set({
-			score: score
+		search = await db.update(redditSearch).set({
+			status: status
 		}).returning();
-		return updatedSearch;
-
+		return search;
 	} catch (err) {
-		console.error("Failed to score Reddit Search", err);
+		console.error("Failed to update search status", err);
 		throw err;
 	}
 }
@@ -203,6 +218,43 @@ export const upsertInstructions = async (email: string, prompt: string, context:
 		}
 	} catch (err) {
 		console.error("Failed to upsert reddit search", err);
+		throw err;
+	}
+}
+
+export const createRedditContent = async (email: string, searchTerm: string, postId: string, score: number):
+	Promise<Array<RedditContent>> => {
+	try {
+		const search = await getRedditSearchesByEmailAndSearch(email, searchTerm);
+		if (search.length === 0) {
+			console.error("search not found");
+			return [];
+		}
+		const content = await db.insert(redditContent).values({
+			searchId: search[0].id,
+			postId: postId,
+			score: score,
+		}).returning();
+		return content;
+	} catch (err) {
+		console.error("Failed to create reddit content", err);
+		throw err;
+	}
+}
+export const replyRedditContent = async (postId: string, reply: string):
+	Promise<Array<RedditContent>> => {
+	try {
+		let content = await db.select().from(redditContent).where(eq(redditContent.postId, postId));
+		if (content.length === 0) {
+			console.error("reddit content not found");
+			return [];
+		}
+		content = await db.update(redditContent).set({
+			reply: reply
+		}).returning();
+		return content;
+	} catch (err) {
+		console.error("Failed to reply to reddit content", err);
 		throw err;
 	}
 }

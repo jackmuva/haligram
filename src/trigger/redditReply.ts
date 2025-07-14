@@ -1,9 +1,9 @@
-import { createRedditContent, getInstructionsByEmail, } from "@/db/queries";
-import { logger, task, tasks } from "@trigger.dev/sdk/v3";
-import { geminiScoreRelevancy } from "./ai/utils";
+import { getInstructionsByEmail, replyRedditContent } from "@/db/queries";
+import { task, logger } from "@trigger.dev/sdk/v3";
+import { geminiReply } from "./ai/utils";
 
-export const redditPostIndex = task({
-  id: "redditPostIndex",
+export const redditReply = task({
+  id: "redditReply",
   maxDuration: 60,
   run: async (payload: {
     userEmail: string,
@@ -14,9 +14,12 @@ export const redditPostIndex = task({
     selftext: string,
     url: string
   }, { ctx }) => {
-    //NOTE:May want to find post and skip gemini call if post already exists with the given context
     const instructions = await getInstructionsByEmail(payload.userEmail);
-    const geminiMessage = geminiScoreRelevancy({ productContext: instructions[0].productContext, message: payload.selftext });
+    const geminiMessage = geminiReply({
+      productContext: instructions[0].productContext,
+      systemPrompt: instructions[0].systemPrompt ?? "",
+      message: payload.selftext
+    });
     const request = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${process.env.GEMINI_API_KEY}`, {
       method: "POST",
       body: JSON.stringify(geminiMessage),
@@ -30,15 +33,12 @@ export const redditPostIndex = task({
 
     const responseData = await request.json();
     if (!responseData?.candidates?.[0]?.content?.parts?.[0]?.text) {
-      logger.error('Invalid API response structure');
+      logger.error('Invalid API response');
       return;
     }
 
     const text = responseData.candidates[0].content.parts[0].text;
-    logger.log("score: ", text);
-    const scoredPost = await createRedditContent(payload.userEmail, payload.searchTerm, payload.name, text as number);
-    if (scoredPost[0].score && scoredPost[0].score >= 4) {
-      await tasks.trigger("redditComment", payload);
-    }
+    logger.log("reply: ", text);
+    await replyRedditContent(payload.name, text as string);
   }
 });

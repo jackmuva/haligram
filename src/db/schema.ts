@@ -7,7 +7,7 @@ export const user = sqliteTable("users", {
 	name: text("name").notNull(),
 	email: text("email").notNull().unique(),
 });
-export type User = InferSelectModel<typeof user>
+export type User = InferSelectModel<typeof user>;
 
 export const redditToken = sqliteTable("RedditTokens", {
 	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
@@ -16,16 +16,15 @@ export const redditToken = sqliteTable("RedditTokens", {
 	refreshToken: text("refreshToken").notNull(),
 	updatedAt: text("updatedAt").$defaultFn(() => (new Date()).toUTCString()),
 });
-export type RedditToken = InferSelectModel<typeof redditToken>
+export type RedditToken = InferSelectModel<typeof redditToken>;
 
 export const redditSearch = sqliteTable("RedditSearch", {
 	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
 	userId: text("userId").references(() => user.id).notNull(),
 	search: text("search").notNull(),
 	status: text("status").$defaultFn(() => "initializing").notNull(),
-	score: int("score"),
 });
-export type RedditSearch = InferSelectModel<typeof redditSearch>
+export type RedditSearch = InferSelectModel<typeof redditSearch>;
 
 export const instructions = sqliteTable("Instructions", {
 	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
@@ -34,3 +33,12 @@ export const instructions = sqliteTable("Instructions", {
 	productContext: text("productContext").notNull(),
 });
 export type Instructions = InferSelectModel<typeof instructions>
+
+export const redditContent = sqliteTable("RedditContent", {
+	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+	searchId: text("searchId").references(() => redditSearch.id).notNull(),
+	postId: text("postId").notNull(),
+	score: int("score"),
+	reply: text("reply"),
+});
+export type RedditContent = InferSelectModel<typeof redditContent>;

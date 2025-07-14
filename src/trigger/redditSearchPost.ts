@@ -1,9 +1,10 @@
+import { updateRedditSearchStatus, upsertRedditSearch } from "@/db/queries";
 import { task, tasks } from "@trigger.dev/sdk/v3";
 
-export const redditSearch = task({
-  id: "redditPostSearch",
+export const redditSearchPost = task({
+  id: "redditSearchPost",
   maxDuration: 600,
-  run: async (payload: { email: string, search: string }, { ctx }) => {
+  run: async (payload: { email: string, search: string, searchId: string }, { ctx }) => {
     const params = new URLSearchParams();
     params.set('limit', '20');
     params.set('t', 'all');
@@ -22,6 +23,7 @@ export const redditSearch = task({
       });
     }
 
+    const search = await updateRedditSearchStatus(payload.searchId, "SEARCHING");
     const body = await response.json();
     const batchHandle = await tasks.batchTrigger("redditPostIndex",
       body.json.data.children.map((post: any) => {

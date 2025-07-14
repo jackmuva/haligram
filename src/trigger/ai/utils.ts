@@ -37,7 +37,7 @@ export const geminiScoreRelevancy = (
     contents: [{
       parts: [{
         text: `On a scale from 1-5, score how relevant the user's product is to the comment.\n
-              Return the score with the following stringified json format: {score: <score>}.
+              Only respond with the score.
               Comment: ${message}`
       }]
     }]
