@@ -38,7 +38,7 @@ export const redditReply = task({
     }
 
     const text = responseData.candidates[0].content.parts[0].text;
-    logger.log("reply: ", text);
+    logger.log("reply: " + text);
     await replyRedditContent(payload.name, text as string);
   }
 });

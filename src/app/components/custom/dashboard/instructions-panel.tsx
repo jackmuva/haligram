@@ -6,21 +6,21 @@ import { Notification } from "../../ui/notification";
 
 export const InstructionsPanel = ({ active, setActive }:
   { active: "instructions" | "knowledge" | "", setActive: (x: "instructions" | "knowledge" | "") => void }) => {
-  const [instr, setInstr] = useState<{ prompt: string, context: string }>
-    ({ prompt: "", context: "" });
+  ({ prompt: "", context: "" });
   const { data, mutate, isLoading } = useSWR(`/api/instructions`, fetcher)
 
   const submitInstr = async () => {
-    if (!instr.context) {
-      const context = window.document.getElementById("context");
-      if (context) {
-        context.innerHTML = "Please give context on your product - description, benefits, use cases, examples";
-      }
+    const prompt = window.document.getElementById("prompt");
+    const context = window.document.getElementById("context");
+    //@ts-ignore
+    if (context && !context.value) {
+      context.innerHTML = "Please give context on your product - description, benefits, use cases, examples";
       return;
     }
     const req = await fetch(`${window.location.origin}/api/instructions`, {
       method: "POST",
-      body: JSON.stringify(instr),
+      //@ts-ignore
+      body: JSON.stringify({ prompt: prompt.value, context: context.value }),
       headers: { 'Content-Type': 'application/json' },
     });
     const res = await req.json();
@@ -55,15 +55,13 @@ export const InstructionsPanel = ({ active, setActive }:
         </div>
       </div>
       <div className="flex flex-col space-y-4 mt-4">
-        <textarea rows={4} placeholder="system prompt for HALIGRAM to create comments"
+        <textarea id="prompt" rows={4} placeholder="system prompt for HALIGRAM to create comments"
           className="outline-none border border-foreground/20 rounded-sm px-1 bg-background-muted"
-          onChange={(e) => setInstr((prev) => ({ ...prev, prompt: e.target.value }))}
-          value={!isLoading && data.instructions.length > 0 ? data.instructions[0].systemPrompt : ""}>
+          defaultValue={!isLoading && data.instructions.length > 0 ? data.instructions[0].systemPrompt : ""}>
         </textarea>
         <textarea id="context" rows={10} placeholder="context on your product - description, benefits, use cases, examples"
           className="outline-none border border-foreground/20 rounded-sm px-1 bg-background-muted"
-          onChange={(e) => setInstr((prev) => ({ ...prev, context: e.target.value }))}
-          value={!isLoading && data.instructions.length > 0 ? data.instructions[0].productContext : ""}>
+          defaultValue={!isLoading && data.instructions.length > 0 ? data.instructions[0].productContext : ""}>
         </textarea>
       </div>
     </div>

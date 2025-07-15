@@ -222,7 +222,8 @@ export const upsertInstructions = async (email: string, prompt: string, context:
 	}
 }
 
-export const createRedditContent = async (email: string, searchTerm: string, postId: string, score: number):
+export const createRedditContent = async (email: string, searchTerm: string, postId: string,
+	url: string, contentText: string, title: string, score: number):
 	Promise<Array<RedditContent>> => {
 	try {
 		const search = await getRedditSearchesByEmailAndSearch(email, searchTerm);
@@ -234,6 +235,9 @@ export const createRedditContent = async (email: string, searchTerm: string, pos
 			searchId: search[0].id,
 			postId: postId,
 			score: score,
+			url: url,
+			contentText: contentText,
+			title: title,
 		}).returning();
 		return content;
 	} catch (err) {
@@ -251,10 +255,19 @@ export const replyRedditContent = async (postId: string, reply: string):
 		}
 		content = await db.update(redditContent).set({
 			reply: reply
-		}).returning();
+		}).where(eq(redditContent.postId, postId)).returning();
 		return content;
 	} catch (err) {
 		console.error("Failed to reply to reddit content", err);
+		throw err;
+	}
+}
+
+export const getRedditContentBySearchId = async (searchId: string): Promise<Array<RedditContent>> => {
+	try {
+		return await db.select().from(redditContent).where(eq(redditContent.searchId, searchId));
+	} catch (err) {
+		console.error("Failed to get Reddit content", err);
 		throw err;
 	}
 }

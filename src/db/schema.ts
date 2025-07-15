@@ -22,7 +22,7 @@ export const redditSearch = sqliteTable("RedditSearch", {
 	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
 	userId: text("userId").references(() => user.id).notNull(),
 	search: text("search").notNull(),
-	status: text("status").$defaultFn(() => "initializing").notNull(),
+	status: text("status").$defaultFn(() => "SEARCHING").notNull(),
 });
 export type RedditSearch = InferSelectModel<typeof redditSearch>;
 
@@ -40,5 +40,8 @@ export const redditContent = sqliteTable("RedditContent", {
 	postId: text("postId").notNull(),
 	score: int("score"),
 	reply: text("reply"),
+	url: text("url"),
+	contentText: text("contentText"),
+	title: text("title"),
 });
 export type RedditContent = InferSelectModel<typeof redditContent>;

@@ -1,13 +1,34 @@
 import { fetcher } from "@/lib/utils";
 import useSWR from "swr";
+import { RedditPost } from "./reddit-post";
+import { RedditContent } from "@/db/schema";
 
 export const ActiveRedditFeed = ({ searchTerm }: { searchTerm: string }) => {
   const params = new URLSearchParams({ q: searchTerm });
-  //const { data, isLoading } = useSWR(`/api/reddit/search?${params.toString()}`, fetcher);
+  const { data, isLoading } = useSWR(`/api/reddit/get-search?${params.toString()}`, fetcher, {
+    refreshInterval: 30000
+  });
 
+  console.log(data);
   return (
-    //isLoading ? (<div>loading...</div>) : (
-    <div></div>
-    //)
+    isLoading ? (<div>loading...</div>) : (
+      <div>
+        {data.searchStatus !== "FINISHED" ? (
+          <div>HALIGRAM is {data.searchStatus}</div>
+        ) : (
+          data.redditContent && data.redditContent.length === 0 ? (
+            <div>No posts found...</div>
+          ) : (
+            <div>
+              {data.redditContent.map((post: RedditContent) => {
+                if (post.reply) {
+                  return (<RedditPost key={post.id} post={post} />);
+                }
+              })}
+            </div>
+          )
+        )}
+      </div>
+    )
   );
 }

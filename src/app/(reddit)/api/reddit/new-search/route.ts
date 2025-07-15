@@ -26,6 +26,6 @@ export async function POST(req: NextRequest) {
 		return Response.json({ status: 500, message: "please provide context on your product" })
 	}
 
-	await tasks.trigger("redditPostSearch", { email: user[0].email, search: body.searchTerm, searchId: searches[0].id });
+	await tasks.trigger("redditSearchPost", { email: user[0].email, search: body.searchTerm, searchId: searches[0].id });
 	return Response.json({ searches: searches })
 }

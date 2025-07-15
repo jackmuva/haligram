@@ -13,8 +13,8 @@ export const geminiReply = (
     },
     contents: [{
       parts: [{
-        text: `Draft a reply to the following comment with information about the user's product.
-               Include information, benefits, and examples.\n
+        text: `Draft a reply to the following comment with information about the user's product. 
+                Do not use markdown formatting. Include information, benefits, and examples.\n
               Comment: ${message}`
       }]
     }]

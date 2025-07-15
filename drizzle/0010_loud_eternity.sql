@@ -1,0 +1,1 @@
+ALTER TABLE `RedditContent` ADD `contentText` text;

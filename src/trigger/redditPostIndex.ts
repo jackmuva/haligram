@@ -35,10 +35,11 @@ export const redditPostIndex = task({
     }
 
     const text = responseData.candidates[0].content.parts[0].text;
-    logger.log("score: ", text);
-    const scoredPost = await createRedditContent(payload.userEmail, payload.searchTerm, payload.name, text as number);
+    logger.log("score: " + text);
+    const scoredPost = await createRedditContent(payload.userEmail, payload.searchTerm, payload.name,
+      payload.url, payload.selftext, payload.title, text as number);
     if (scoredPost[0].score && scoredPost[0].score >= 4) {
-      await tasks.trigger("redditComment", payload);
+      await tasks.trigger("redditReply", payload);
     }
   }
 });

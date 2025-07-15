@@ -4,9 +4,11 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { RedditSearch } from "@/db/schema";
+import { toast, ToastContainer } from "react-toastify";
+import { Notification } from "@/app/components/ui/notification";
 
 export function RedditFeed() {
-  const { data, mutate, isLoading } = useSWR(`/api/reddit/past-search`, fetcher)
+  const { data, mutate, isLoading } = useSWR(`/api/reddit/past-searches`, fetcher)
   const [feedState, setFeedState] = useState<{ searchTerm: string, activeTerm: string }>
     ({ searchTerm: "", activeTerm: "" });
 
@@ -29,11 +31,22 @@ export function RedditFeed() {
     if (res) {
       mutate()
       setFeedState((prev) => ({ ...prev, searchTerm: "" }));
+      //@ts-ignore
+      toast(<Notification />, {
+        data: {
+          message: `HALIGRAM is searching for relevant posts on [${search}] 
+                    Check ${search} tab for status.`
+        },
+        closeButton: false,
+        customProgressBar: true,
+        position: 'top-center'
+      });
     }
   }
 
   return (
     <div className="w-full flex flex-col pt-2 space-y-4">
+      <ToastContainer />
       <div className="flex space-x-2">
         <input type="text" placeholder="search for keywords or phrases" maxLength={512}
           className="border border-foreground/20 rounded-sm px-1 bg-background-muted w-80"
@@ -60,7 +73,7 @@ export function RedditFeed() {
           )
         })) : (<div>loading...</div>)}
       </div>
-      <ActiveRedditFeed searchTerm={feedState.activeTerm} />
+      {feedState.activeTerm && <ActiveRedditFeed searchTerm={feedState.activeTerm} />}
     </div>
   )
 }

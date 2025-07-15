@@ -1,12 +1,12 @@
 import { updateRedditSearchStatus, upsertRedditSearch } from "@/db/queries";
-import { task, tasks } from "@trigger.dev/sdk/v3";
+import { logger, task, tasks } from "@trigger.dev/sdk/v3";
 
 export const redditSearchPost = task({
   id: "redditSearchPost",
   maxDuration: 600,
   run: async (payload: { email: string, search: string, searchId: string }, { ctx }) => {
     const params = new URLSearchParams();
-    params.set('limit', '20');
+    params.set('limit', '3');
     params.set('t', 'all');
     params.set('sort', 'relevance');
     params.set('raw_json', '1');
@@ -23,10 +23,13 @@ export const redditSearchPost = task({
       });
     }
 
-    const search = await updateRedditSearchStatus(payload.searchId, "SEARCHING");
+    const search = await updateRedditSearchStatus(payload.searchId, "INDEXING");
+    if (!search) {
+      logger.error("unable to update status");
+    }
     const body = await response.json();
-    const batchHandle = await tasks.batchTrigger("redditPostIndex",
-      body.json.data.children.map((post: any) => {
+    const batch = await tasks.batchTrigger("redditPostIndex",
+      body.data.children.map((post: any) => {
         return {
           payload: {
             userEmail: payload.email,
@@ -39,5 +42,10 @@ export const redditSearchPost = task({
           }
         }
       }));
+    if (batch) {
+      await updateRedditSearchStatus(payload.searchId, "FINISHED");
+    } else {
+      await updateRedditSearchStatus(payload.searchId, "ERRORED");
+    }
   },
 });
