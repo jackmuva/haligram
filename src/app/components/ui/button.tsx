@@ -7,7 +7,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = "", variant = "default", size = "sm", children, ...props }, ref) => {
-    const baseStyles = "border border-foreground rounded-sm flex w-fit items-center space-x-2"
+    const baseStyles = "cursor-pointer border border-foreground rounded-sm flex w-fit items-center space-x-2"
 
     const variantStyles = {
       default: "bg-stone-100 hover:bg-stone-100/10 text-slate-900 border-stone-200",
