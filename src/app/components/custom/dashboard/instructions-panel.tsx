@@ -57,11 +57,11 @@ export const InstructionsPanel = ({ active, setActive }:
       <div className="flex flex-col space-y-4 mt-4">
         <textarea id="prompt" rows={4} placeholder="system prompt for HALIGRAM to create comments"
           className="outline-none border border-foreground/20 rounded-sm px-1 bg-background-muted"
-          defaultValue={!isLoading && data.instructions.length > 0 ? data.instructions[0].systemPrompt : ""}>
+          defaultValue={!isLoading && data.instructions && data.instructions.length > 0 && data.instructions[0].systemPrompt ? data.instructions[0].systemPrompt : ""}>
         </textarea>
         <textarea id="context" rows={10} placeholder="context on your product - description, benefits, use cases, examples"
           className="outline-none border border-foreground/20 rounded-sm px-1 bg-background-muted"
-          defaultValue={!isLoading && data.instructions.length > 0 ? data.instructions[0].productContext : ""}>
+          defaultValue={!isLoading && data.instructions && data.instructions.length > 0 && data.instructions[0].productContext ? data.instructions[0].productContext : ""}>
         </textarea>
       </div>
     </div>
