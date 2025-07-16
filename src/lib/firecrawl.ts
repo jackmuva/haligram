@@ -5,12 +5,12 @@ class FirecrawlService {
 
 	constructor() { };
 
-	public static createService = async () => {
+	public static createService = () => {
 		const fs = new FirecrawlService();
 		return fs;
 	}
 
-	public async crawl({ url, limit, maxDepth, userId }: { url: string, limit: number, userId: string, maxDepth?: number }) {
+	public async crawl({ url, limit, maxDepth = 5, userId }: { url: string, limit: number, userId: string, maxDepth?: number }) {
 		const crawlResponse = await this._firecrawl.asyncCrawlUrl(url, {
 			limit: limit,
 			maxDepth: maxDepth ?? 3,

@@ -9,12 +9,12 @@ export const KnowledgePanel = ({ active, setActive }:
 
   const submitFirecrawlJob = async () => {
     const url = window.document.getElementById("urlBar").value;
-    const crawlDepth = window.document.getElementById("crawlDepth").value;
+    const crawlDepth = window.document.getElementById("limit").value;
     fetch(`${window.location.origin}/api/knowledge`, {
       method: "POST",
       body: JSON.stringify({
         url: url,
-        crawlDepth: crawlDepth,
+        limit: crawlDepth,
       }),
     }).then((job) => {
       if (job) {
@@ -46,7 +46,7 @@ export const KnowledgePanel = ({ active, setActive }:
       </h1>
       <div className="w-full flex space-x-2">
         <Input id="urlBar" type="url" placeholder="crawl url for external knowledge" className="w-full" />
-        <Input id="crawlDepth" defaultValue={1} type="number" min={1} max={5} className="w-10" />
+        <Input id="limit" defaultValue={1} type="number" min={1} max={5} className="w-10" />
       </div>
       <Button className="w-44 bg-indigo-500 text-white hover:bg-indigo-300"
         variant="custom" onClick={() => submitFirecrawlJob()}>

@@ -272,27 +272,22 @@ export const getRedditContentBySearchId = async (searchId: string): Promise<Arra
 		throw err;
 	}
 }
-
-export const insertFirecrawlJob = async (email: string, jobId: string, url: string) => {
+export const getFirecrawlJobByEmail = async (email: string) => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
 			console.error("user not found");
 			return [];
 		}
-		const job = await db.insert(firecrawlJob).values({
-			userId: selectedUser[0].id,
-			jobId: jobId,
-			url: url,
-		}).returning();
+		const job = await db.select().from(firecrawlJob)
+			.where(eq(firecrawlJob.userId, selectedUser[0].id));
 		return job;
 	} catch (err) {
-		console.error("unable to create firecrawl job");
+		console.error("unable to get firecrawl job");
 		throw err;
 	}
 }
-
-export const getFirecrawlJob = async (email: string, url: string) => {
+export const getFirecrawlJobByEmailAndUrl = async (email: string, url: string) => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
 		if (selectedUser.length === 0) {
@@ -308,3 +303,34 @@ export const getFirecrawlJob = async (email: string, url: string) => {
 		throw err;
 	}
 }
+
+export const upsertFirecrawlJob = async (email: string, jobId: string, url: string, error?: string) => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("user not found");
+			return [];
+		}
+		let job = await getFirecrawlJobByEmailAndUrl(email, url);
+		if (job.length === 0) {
+			job = await db.insert(firecrawlJob).values({
+				userId: selectedUser[0].id,
+				jobId: jobId,
+				url: url,
+				error: error,
+			}).returning();
+		} else {
+			job = await db.update(firecrawlJob).set({
+				jobId: jobId,
+				error: error,
+			}).where(and(eq(firecrawlJob.url, url),
+				eq(firecrawlJob.userId, selectedUser[0].id))).returning();
+		}
+		return job;
+	} catch (err) {
+		console.error("unable to create firecrawl job");
+		throw err;
+	}
+}
+
+

@@ -19,7 +19,6 @@
     "@useparagon/connect": "^2.0.6",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.2",
-    "jose": "^6.0.11",
     "next": "15.3.5",
     "next-auth": "^5.0.0-beta.29",
     "react": "^19.0.0",

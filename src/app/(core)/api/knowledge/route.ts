@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { getUser } from "@/db/queries";
+import { getFirecrawlJobByEmail, getUser, upsertFirecrawlJob } from "@/db/queries";
+import { firecrawlService } from "@/lib/firecrawl";
 
 export async function POST(req: NextRequest) {
 	const session = await auth();
@@ -17,9 +18,9 @@ export async function POST(req: NextRequest) {
 
 	}
 	const user = await getUser(session.user.email, session.user.name);
-	const body: { url: string, crawlDepth: number } = await req.json();
-
-	const job = await upsertInstructions(user[0].email, body.prompt, body.context);
+	const body: { url: string, limit: number } = await req.json();
+	const firecrawlReq = await firecrawlService.crawl({ url: body.url, limit: body.limit, userId: user[0].id });
+	const job = await upsertFirecrawlJob(user[0].email, firecrawlReq.id ?? "error", body.url, firecrawlReq.error);
 	return Response.json({ job: job })
 }
 
@@ -37,6 +38,6 @@ export async function GET() {
 		});
 
 	}
-	const user = await getUser(session.user.email, session.user.name);
-
+	const jobs = await getFirecrawlJobByEmail(session.user.email);
+	return Response.json({ jobs: jobs });
 }
