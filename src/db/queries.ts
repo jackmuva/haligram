@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import { Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, desc } from 'drizzle-orm';
 
 const db = drizzle(
 	createClient({
@@ -110,7 +110,8 @@ export const getRedditSearchesByEmail = async (email: string): Promise<Array<Red
 			return [];
 		}
 		const search = await db.select().from(redditSearch)
-			.where(eq(redditSearch.userId, selectedUser[0].id));
+			.where(eq(redditSearch.userId, selectedUser[0].id))
+			.orderBy(desc(redditSearch.updatedAt));
 		return search;
 	} catch (err) {
 		console.error("failed to get reddit searches", err);

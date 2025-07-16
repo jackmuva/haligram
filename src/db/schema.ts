@@ -23,6 +23,7 @@ export const redditSearch = sqliteTable("RedditSearch", {
 	userId: text("userId").references(() => user.id).notNull(),
 	search: text("search").notNull(),
 	status: text("status").$defaultFn(() => "SEARCHING").notNull(),
+	updatedAt: text("updatedAt").$defaultFn(() => (new Date()).toUTCString()),
 });
 export type RedditSearch = InferSelectModel<typeof redditSearch>;
 

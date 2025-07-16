@@ -6,7 +6,7 @@ import { RedditContent } from "@/db/schema";
 export const ActiveRedditFeed = ({ searchTerm }: { searchTerm: string }) => {
   const params = new URLSearchParams({ q: searchTerm });
   const { data, isLoading } = useSWR(`/api/reddit/get-search?${params.toString()}`, fetcher, {
-    refreshInterval: 30000
+    refreshInterval: 10000
   });
 
   console.log(data);

@@ -1,0 +1,1 @@
+ALTER TABLE `RedditSearch` ADD `updatedAt` text;
