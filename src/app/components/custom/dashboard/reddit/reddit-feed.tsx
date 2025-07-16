@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { RedditSearch } from "@/db/schema";
 import { toast, ToastContainer } from "react-toastify";
 import { Notification } from "@/app/components/ui/notification";
+import { Input } from "@/app/components/ui/input";
 
 export function RedditFeed() {
   const { data, mutate, isLoading } = useSWR(`/api/reddit/past-searches`, fetcher)
@@ -48,8 +49,8 @@ export function RedditFeed() {
     <div className="w-full flex flex-col pt-2 space-y-4">
       <ToastContainer />
       <div className="flex space-x-2">
-        <input type="text" placeholder="search for keywords or phrases" maxLength={512}
-          className="border border-foreground/20 rounded-sm px-1 bg-background-muted w-80"
+        <Input type="text" placeholder="search for keywords or phrases" maxLength={512}
+          className="w-80"
           onChange={(e) => setFeedState((prev) => ({ ...prev, searchTerm: e.target.value }))}
           onKeyDown={(e) => {
             if (e.key === "Enter") {

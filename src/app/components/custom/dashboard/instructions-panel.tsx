@@ -37,7 +37,7 @@ export const InstructionsPanel = ({ active, setActive }:
   }
 
   return (
-    <div className={`relative border border-foreground/20 rounded-sm w-full p-4 bg-background duration-700 
+    <div className={`relative border border-foreground/20 rounded-sm w-full p-2 bg-background duration-700 
           ease-in-out transition-all overflow-y-scroll 
           ${active === "instructions" ? "flex-4" : "flex-1 hover:flex-4"}`}
       onClick={() => setActive("instructions")}>

@@ -46,3 +46,11 @@ export const redditContent = sqliteTable("RedditContent", {
 	title: text("title"),
 });
 export type RedditContent = InferSelectModel<typeof redditContent>;
+
+export const firecrawlJob = sqliteTable("FirecrawlJob", {
+	id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+	userId: text("userId").references(() => user.id).notNull(),
+	jobId: text("jobId").notNull(),
+	url: text("url").notNull(),
+});
+export type FirecrawlJob = InferSelectModel<typeof firecrawlJob>;

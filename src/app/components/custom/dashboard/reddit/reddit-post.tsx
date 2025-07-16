@@ -6,6 +6,8 @@ export const RedditPost = ({ post }: { post: RedditContent }) => {
   const [expand, setExpand] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  //TODO:button to post comment
+
   useEffect(() => {
     if (expand && textareaRef.current) {
       textareaRef.current.style.height = 'auto';

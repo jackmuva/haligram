@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
-import { Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
+import { firecrawlJob, Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
 import { and, eq, desc } from 'drizzle-orm';
 
 const db = drizzle(
@@ -269,6 +269,42 @@ export const getRedditContentBySearchId = async (searchId: string): Promise<Arra
 		return await db.select().from(redditContent).where(eq(redditContent.searchId, searchId));
 	} catch (err) {
 		console.error("Failed to get Reddit content", err);
+		throw err;
+	}
+}
+
+export const insertFirecrawlJob = async (email: string, jobId: string, url: string) => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("user not found");
+			return [];
+		}
+		const job = await db.insert(firecrawlJob).values({
+			userId: selectedUser[0].id,
+			jobId: jobId,
+			url: url,
+		}).returning();
+		return job;
+	} catch (err) {
+		console.error("unable to create firecrawl job");
+		throw err;
+	}
+}
+
+export const getFirecrawlJob = async (email: string, url: string) => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("user not found");
+			return [];
+		}
+		const job = await db.select().from(firecrawlJob)
+			.where(and(eq(firecrawlJob.userId, selectedUser[0].id),
+				eq(firecrawlJob.url, url)));
+		return job;
+	} catch (err) {
+		console.error("unable to get firecrawl job");
 		throw err;
 	}
 }
