@@ -15,10 +15,11 @@ export const redditReply = task({
     url: string
   }, { ctx }) => {
     const instructions = await getInstructionsByEmail(payload.userEmail);
-    const geminiMessage = geminiReply({
+    const geminiMessage = await geminiReply({
       productContext: instructions[0].productContext,
       systemPrompt: instructions[0].systemPrompt ?? "",
-      message: payload.selftext
+      message: payload.selftext,
+      userEmail: payload.userEmail,
     });
     const request = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${process.env.GEMINI_API_KEY}`, {
       method: "POST",

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import FirecrawlApp, { CrawlParams, CrawlStatusResponse } from '@mendable/firecrawl-js';
+import FirecrawlApp from '@mendable/firecrawl-js';
 
 class FirecrawlService {
 	protected _firecrawl = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY! });
@@ -11,7 +11,7 @@ class FirecrawlService {
 		return fs;
 	}
 
-	public async crawl({ url, limit, maxDepth = 5, userId }: { url: string, limit: number, userId: string, maxDepth?: number }) {
+	public async crawl({ url, limit, maxDepth = 5, email }: { url: string, limit: number, email: string, maxDepth?: number }) {
 		const crawlResponse = await this._firecrawl.asyncCrawlUrl(url, {
 			limit: limit,
 			maxDepth: maxDepth ?? 3,
@@ -21,7 +21,7 @@ class FirecrawlService {
 			webhook: {
 				url: `${process.env.APPLICATION_URL!}/api/knowledge/webhook`,
 				headers: {},
-				metadata: { "userId": userId },
+				metadata: { "user": email },
 				events: ["completed", "failed"],
 			}
 		});

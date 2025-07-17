@@ -1,6 +1,9 @@
-export const geminiReply = (
-  { systemPrompt, productContext, message }:
-    { systemPrompt: string, productContext: string, message: string }
+import { getFirecrawlJobByEmail } from "@/db/queries";
+import { pineconeService } from "@/lib/pinecone";
+
+export const geminiReply = async (
+  { systemPrompt, productContext, message, userEmail }:
+    { systemPrompt: string, productContext: string, message: string, userEmail: string }
 ) => {
   const geminiMessage = {
     system_instruction: {
@@ -11,13 +14,34 @@ export const geminiReply = (
               Additional instructions: ${systemPrompt}`
       }]
     },
-    contents: [{
-      parts: [{
-        text: `Draft a reply to the following comment with information about the user's product. 
+    contents: [
+      {
+        role: "user",
+        parts: [{
+          text: `Draft a reply to the following comment with information about the user's product. 
                 Do not use markdown formatting. Include information, benefits, and examples.\n
               Comment: ${message}`
+        }]
+      }
+    ]
+  }
+
+  const crawled = await getFirecrawlJobByEmail(userEmail);
+  if (crawled) {
+    const retrieved: any = await pineconeService.retrieveContext({ query: message, namespaceName: userEmail });
+    console.log(retrieved.result.hits);
+    let context = "";
+    for (const hit of retrieved.result.hits) {
+      context += (hit.fields.chunk_text + " \n\n");
+    }
+
+    geminiMessage.contents.unshift({
+      role: "model",
+      parts: [{
+        text: `Use this context about the user's product to perform an action or answer a question:\n
+                ${context}`
       }]
-    }]
+    })
   }
   return geminiMessage;
 }
