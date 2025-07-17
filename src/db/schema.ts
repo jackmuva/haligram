@@ -53,5 +53,6 @@ export const firecrawlJob = sqliteTable("FirecrawlJob", {
 	jobId: text("jobId").notNull(),
 	url: text("url").notNull(),
 	error: text("error"),
+	status: text("status").$defaultFn(() => "running"),
 });
 export type FirecrawlJob = InferSelectModel<typeof firecrawlJob>;

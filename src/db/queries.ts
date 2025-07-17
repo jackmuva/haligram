@@ -333,4 +333,16 @@ export const upsertFirecrawlJob = async (email: string, jobId: string, url: stri
 	}
 }
 
+export const updateFirecrawlJobById = async (jobId: string, status: string) => {
+	try {
+		const job = await db.update(firecrawlJob).set({
+			status: status
+		}).where(eq(firecrawlJob.jobId, jobId)).returning();
+		return job;
+	} catch (err) {
+		console.error("unable to create firecrawl job");
+		throw err;
+	}
+}
+
 

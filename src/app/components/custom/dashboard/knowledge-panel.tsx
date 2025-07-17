@@ -3,9 +3,13 @@ import { Input } from "../../ui/input";
 import { toast } from "react-toastify";
 import { Notification } from "../../ui/notification";
 import { ToastContainer } from "react-toastify";
+import useSWR from "swr";
+import { fetcher } from "@/lib/utils";
 
 export const KnowledgePanel = ({ active, setActive }:
   { active: "instructions" | "knowledge" | "", setActive: (x: "instructions" | "knowledge" | "") => void }) => {
+  const { data, isLoading, mutate } = useSWR('api/knowledge', fetcher);
+  console.log(data);
 
   const submitFirecrawlJob = async () => {
     const url = window.document.getElementById("urlBar").value;

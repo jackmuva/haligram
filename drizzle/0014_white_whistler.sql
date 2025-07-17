@@ -1,0 +1,1 @@
+ALTER TABLE `FirecrawlJob` ADD `error` text;

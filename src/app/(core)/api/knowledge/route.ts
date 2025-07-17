@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 	}
 	const user = await getUser(session.user.email, session.user.name);
 	const body: { url: string, limit: number } = await req.json();
-	const firecrawlReq = await firecrawlService.crawl({ url: body.url, limit: body.limit, userId: user[0].id });
+	const firecrawlReq = await firecrawlService.crawl({ url: body.url, limit: Number(body.limit), userId: user[0].id });
 	const job = await upsertFirecrawlJob(user[0].email, firecrawlReq.id ?? "error", body.url, firecrawlReq.error);
 	return Response.json({ job: job })
 }

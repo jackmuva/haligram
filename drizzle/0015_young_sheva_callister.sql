@@ -1,0 +1,1 @@
+ALTER TABLE `FirecrawlJob` ADD `status` text;

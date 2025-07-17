@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import FirecrawlApp, { CrawlParams, CrawlStatusResponse } from '@mendable/firecrawl-js';
 
 class FirecrawlService {
@@ -18,7 +19,7 @@ class FirecrawlService {
 				formats: ['markdown'],
 			},
 			webhook: {
-				url: `${process.env.BASE_URL!}/api/knowledge/webhook`,
+				url: `${process.env.APPLICATION_URL!}/api/knowledge/webhook`,
 				headers: {},
 				metadata: { "userId": userId },
 				events: ["completed", "failed"],
