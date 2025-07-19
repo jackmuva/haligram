@@ -17,7 +17,8 @@ export const extractMarkdown = task({
           payload: {
             jobId: payload.jobId,
             userId: payload.userId,
-            markdown: mdData.markdown
+            markdown: mdData.markdown,
+            url: mdData.url,
           }
         });
       })

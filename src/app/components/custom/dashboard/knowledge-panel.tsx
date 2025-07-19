@@ -5,10 +5,13 @@ import { Notification } from "../../ui/notification";
 import { ToastContainer } from "react-toastify";
 import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
+import { FirecrawlJob } from "@/db/schema";
 
 export const KnowledgePanel = ({ active, setActive }:
   { active: "instructions" | "knowledge" | "", setActive: (x: "instructions" | "knowledge" | "") => void }) => {
-  const { data, isLoading, mutate } = useSWR('api/knowledge', fetcher);
+  const { data, isLoading, mutate } = useSWR('api/knowledge', fetcher, {
+    refreshInterval: 10000
+  });
   console.log(data);
 
   const submitFirecrawlJob = async () => {
@@ -57,6 +60,17 @@ export const KnowledgePanel = ({ active, setActive }:
         crawl
       </Button>
       <div className="mt-2 font-bold">indexed urls:</div>
+      <div className="w-full flex flex-col space-y-1">
+        {isLoading ? (<div>loading crawled urls...</div>) : (
+          data.jobs.map((job: FirecrawlJob) => {
+            return (
+              <div key={job.id} className="w-full flex justify-between items-center">
+                <p>{job.url}</p>
+                <p>{job.status}</p>
+              </div>
+            );
+          }))}
+      </div>
     </div>
   );
 }

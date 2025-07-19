@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
 		});
 
 	}
+
 	const user = await getUser(session.user.email, session.user.name);
 	const body: { searchTerm: string } = await req.json();
 	const searches = await upsertRedditSearch(user[0].email, body.searchTerm);

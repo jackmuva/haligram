@@ -1,5 +1,5 @@
 import { pineconeService } from "@/lib/pinecone";
-import { task } from "@trigger.dev/sdk/v3";
+import { logger, task } from "@trigger.dev/sdk/v3";
 
 
 export const indexMarkdown = task({
@@ -7,17 +7,21 @@ export const indexMarkdown = task({
   maxDuration: 180,
   run: async (payload: {
     jobId: string,
-    email: string,
+    userId: string,
     markdown: string,
+    url: string,
   }, { ctx }) => {
     const pcRes = await pineconeService.upsertText({
       text: payload.markdown,
       metadata: {
         jobId: payload.jobId,
         userId: payload.userId,
+        url: payload.url,
       },
-      namespaceName: payload.email,
+      namespaceName: payload.userId,
     });
+    logger.log("pinecone result: ", pcRes);
+    console.log("pinecone log", pcRes);
     return Response.json(pcRes);
   }
 });

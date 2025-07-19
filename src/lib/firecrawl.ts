@@ -19,7 +19,8 @@ class FirecrawlService {
 				formats: ['markdown'],
 			},
 			webhook: {
-				url: `${process.env.APPLICATION_URL!}/api/knowledge/webhook`,
+				//url: `${process.env.APPLICATION_URL!}/api/knowledge/webhook`,
+				url: `https://paratodemo.com/api/knowledge/webhook`,
 				headers: {},
 				metadata: { "user": email },
 				events: ["completed", "failed"],

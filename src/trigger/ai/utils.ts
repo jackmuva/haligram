@@ -1,5 +1,6 @@
 import { getFirecrawlJobByEmail } from "@/db/queries";
 import { pineconeService } from "@/lib/pinecone";
+import { logger } from "@trigger.dev/sdk/v3";
 
 export const geminiReply = async (
   { systemPrompt, productContext, message, userEmail }:
@@ -34,6 +35,8 @@ export const geminiReply = async (
     for (const hit of retrieved.result.hits) {
       context += (hit.fields.chunk_text + " \n\n");
     }
+    logger.log("content: ", { content: context });
+    console.log(context);
 
     geminiMessage.contents.unshift({
       role: "model",

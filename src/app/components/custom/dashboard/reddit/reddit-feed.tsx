@@ -15,7 +15,13 @@ export function RedditFeed() {
 
   useEffect(() => {
     if (data && data.searches.length > 0) {
-      setFeedState((prev) => ({ ...prev, activeTerm: data.searches[0].search }));
+      setFeedState((prev) => ({
+        ...prev, activeTerm: data.searches.sort((a: RedditSearch, b: RedditSearch) => {
+          const aDate = a.updatedAt ?? '';
+          const bDate = b.updatedAt ?? '';
+          return aDate.localeCompare(bDate);
+        })[0].search
+      }));
     }
   }, [data]);
 
@@ -64,15 +70,25 @@ export function RedditFeed() {
         </Button>
       </div>
       <div className="flex flex-wrap gap-2 justify-start">
-        {!isLoading ? (data.searches.map((search: RedditSearch) => {
-          return (
-            <div key={search.search} className={`border ${search.search === feedState.activeTerm ? "bg-indigo-500/70" : "bg-foreground-muted/30"}
-              px-2 rounded-sm hover:bg-foreground hover:text-background overflow-x-scroll cursor-pointer`}
-              onClick={() => setFeedState((prev) => ({ ...prev, activeTerm: search.search }))}>
-              {search.search}
-            </div>
-          )
-        })) : (<div>loading...</div>)}
+        {!isLoading ? (
+          [...data.searches]
+            .sort((a: RedditSearch, b: RedditSearch) => {
+              const aDate = a.updatedAt ?? '';
+              const bDate = b.updatedAt ?? '';
+              return aDate.localeCompare(bDate);
+            })
+            .map((search: RedditSearch) => {
+              return (
+                <div
+                  key={search.search}
+                  className={`border ${search.search === feedState.activeTerm ? "bg-indigo-500/70" : "bg-foreground-muted/30"}
+                  px-2 rounded-sm hover:bg-foreground hover:text-background overflow-x-scroll cursor-pointer`}
+                  onClick={() => setFeedState((prev) => ({ ...prev, activeTerm: search.search }))}
+                >
+                  {search.search}
+                </div>
+              )
+            })) : (<div>loading...</div>)}
       </div>
       {feedState.activeTerm && <ActiveRedditFeed searchTerm={feedState.activeTerm} />}
     </div>

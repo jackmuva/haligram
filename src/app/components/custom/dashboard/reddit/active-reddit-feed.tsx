@@ -20,11 +20,14 @@ export const ActiveRedditFeed = ({ searchTerm }: { searchTerm: string }) => {
             <div>No posts found...</div>
           ) : (
             <div>
-              {data.redditContent.map((post: RedditContent) => {
-                if (post.reply) {
-                  return (<RedditPost key={post.id} post={post} />);
-                }
-              })}
+              {data.redditContent.filter((post: RedditContent) => post.reply).length > 0 ? (
+                data.redditContent.map((post: RedditContent) => {
+                  if (post.reply) {
+                    return (<RedditPost key={post.id} post={post} />);
+                  }
+                })) : (
+                <div>No relevant posts...</div>
+              )}
             </div>
           )
         )}
