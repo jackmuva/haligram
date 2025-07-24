@@ -11,7 +11,8 @@ export const indexMarkdown = task({
     markdown: string,
     url: string,
   }, { ctx }) => {
-    const pcRes = await pineconeService.upsertText({
+    console.log("index payload: ", payload);
+    await pineconeService.upsertText({
       text: payload.markdown,
       metadata: {
         jobId: payload.jobId,
@@ -20,8 +21,5 @@ export const indexMarkdown = task({
       },
       namespaceName: payload.userId,
     });
-    logger.log("pinecone result: ", pcRes);
-    console.log("pinecone log", pcRes);
-    return Response.json(pcRes);
   }
 });

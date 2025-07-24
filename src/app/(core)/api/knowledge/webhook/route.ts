@@ -12,13 +12,12 @@ interface WebhookPayload {
 
 export async function POST(req: NextRequest) {
 	const webhook: WebhookPayload = await req.json();
-	console.log(webhook);
 	const jobStatus = await firecrawlService.checkCrawlStatus(webhook.id);
 	await updateFirecrawlJobById(webhook.id, webhook.type);
 	if (webhook.type === "crawl.completed") {
 		const handle = await tasks.trigger("extractMarkdown", {
 			jobId: webhook.id,
-			email: webhook.metadata.user,
+			userId: webhook.metadata.user,
 			crawlResponse: jobStatus,
 		});
 		return Response.json(handle);

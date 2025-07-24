@@ -18,12 +18,11 @@ export const extractMarkdown = task({
             jobId: payload.jobId,
             userId: payload.userId,
             markdown: mdData.markdown,
-            url: mdData.url,
+            url: mdData.metadata?.sourceURL,
           }
         });
       })
     );
-    console.log(batchRes);
     if (batchRes) {
       await updateFirecrawlJobById(payload.jobId, "indexed");
     }

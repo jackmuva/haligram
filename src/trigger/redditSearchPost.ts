@@ -1,4 +1,4 @@
-import { updateRedditSearchStatus, upsertRedditSearch } from "@/db/queries";
+import { updateRedditSearchStatus } from "@/db/queries";
 import { logger, task, tasks } from "@trigger.dev/sdk/v3";
 
 export const redditSearchPost = task({

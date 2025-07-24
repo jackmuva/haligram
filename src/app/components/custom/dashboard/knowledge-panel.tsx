@@ -25,6 +25,7 @@ export const KnowledgePanel = ({ active, setActive }:
       }),
     }).then((job) => {
       if (job) {
+        // @ts-ignore
         toast(<Notification />, {
           position: "top-left",
           data: { message: "HALIGRAM is extracting data from site" },
@@ -32,6 +33,7 @@ export const KnowledgePanel = ({ active, setActive }:
           closeButton: false,
         })
       } else {
+        // @ts-ignore
         toast(<Notification />, {
           position: "top-left",
           data: { message: "Unable to extract data. Please try again" },
