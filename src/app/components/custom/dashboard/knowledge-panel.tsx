@@ -15,8 +15,11 @@ export const KnowledgePanel = ({ active, setActive }:
   console.log(data);
 
   const submitFirecrawlJob = async () => {
+    //@ts-ignore
     const url = window.document.getElementById("urlBar").value;
+    //@ts-ignore
     const crawlDepth = window.document.getElementById("limit").value;
+
     fetch(`${window.location.origin}/api/knowledge`, {
       method: "POST",
       body: JSON.stringify({

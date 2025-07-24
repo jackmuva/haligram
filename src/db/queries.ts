@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import { firecrawlJob, Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
-import { and, eq, desc, asc } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 const db = drizzle(
 	createClient({
