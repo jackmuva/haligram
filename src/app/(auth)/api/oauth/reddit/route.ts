@@ -16,7 +16,7 @@ export async function GET() {
 		state: session.user.email ?? "no-user",
 		redirect_uri: `${process.env.APPLICATION_URL}/api/oauth/reddit/callback`,
 		duration: 'permanent',
-		scope: 'submit vote read',
+		scope: 'identity submit vote read',
 	});
 	return NextResponse.redirect(`https://www.reddit.com/api/v1/authorize?${urlParams.toString()}`,
 		{ status: 307 });

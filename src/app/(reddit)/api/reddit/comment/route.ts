@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { RedditToken } from "@/db/schema";
 import { deleteRedditTokenByEmail, getRedditTokenByEmail } from "@/db/queries";
 import { callOAuthAPI } from "@/lib/utils";
+import { reauthReddit } from "../utils";
 
 export async function POST(req: NextRequest) {
 	const session = await auth();
@@ -33,39 +34,24 @@ export async function POST(req: NextRequest) {
 	params.set('text', body.text);
 
 	const commentApi = async () => {
-		return await fetch(`https://www.reddit.com/api/comment`, {
+		return await fetch(`https://oauth.reddit.com/api/comment`, {
 			method: "POST",
 			body: params,
 			headers: {
 				"Authorization": `bearer ${token[0].accessToken}`,
 				"Content-type": "application/x-www-form-urlencoded",
-				"User-Agent": "haligram-dev:v1.0 (by /u/skmoto)",
+				"User-Agent": "haligram-dev/v1.0 (by /u/skmoto)",
 			}
 		});
 	}
-	//const refreshToken = async () => {
-	//	const data = new URLSearchParams({
-	//		grant_type: 'refresh_token',
-	//		refresh_token: token[0].refreshToken,
-	//	});
-	//
-	//	return await fetch("https://www.reddit.com/api/v1/access_token", {
-	//		method: "POST",
-	//		headers: {
-	//			'Content-Type': 'application/x-www-form-urlencoded',
-	//			'Authorization': 'Basic ' + Buffer.from(`${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`).toString("base64"),
-	//		},
-	//		body: data.toString(),
-	//	});
-	//}
-	//
-	////@ts-ignore
-	//const purgeToken = async () => await deleteRedditTokenByEmail(session.user.email);
-	//
-	//const commentReq = await callOAuthAPI({ apiCall: commentApi, refresh: refreshToken, purge: purgeToken });
-	const commentReq = await commentApi();
-	console.log(commentReq);
-	const res = await commentReq.json();
-	console.log(res.json());
-	return Response.json(res);
+	//@ts-ignore
+	const refreshToken = async () => await reauthReddit(session.user.email, token[0].refreshToken);
+	//@ts-ignore
+	const purgeToken = async () => await deleteRedditTokenByEmail(session.user.email);
+
+	const commentReq = await callOAuthAPI({ apiCall: commentApi, refresh: refreshToken, purge: purgeToken });
+	if (commentReq && commentReq.ok) {
+		return Response.json({ status: 200, message: "comment successful" });
+	}
+	return Response.json({ status: 500, message: "unable to comment" });
 }
