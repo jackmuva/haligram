@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { RedditToken } from "@/db/schema";
-import { deleteRedditTokenByEmail, getRedditTokenByEmail } from "@/db/queries";
+import { deleteRedditContentById, deleteRedditContentByPostId, deleteRedditTokenByEmail, getRedditTokenByEmail } from "@/db/queries";
 import { callOAuthAPI } from "@/lib/utils";
 import { reauthReddit } from "../utils";
 
@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
 	const purgeToken = async () => await deleteRedditTokenByEmail(session.user.email);
 
 	const commentReq = await callOAuthAPI({ apiCall: commentApi, refresh: refreshToken, purge: purgeToken });
-	if (commentReq && commentReq.ok) {
+	const post = await deleteRedditContentByPostId(body.parent);
+	if (commentReq && commentReq.ok && post) {
 		return Response.json({ status: 200, message: "comment successful" });
 	}
 	return Response.json({ status: 500, message: "unable to comment" });

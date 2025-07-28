@@ -23,7 +23,7 @@ export const ActiveRedditFeed = ({ searchTerm }: { searchTerm: string }) => {
               {data.redditContent.filter((post: RedditContent) => post.reply).length > 0 ? (
                 data.redditContent.map((post: RedditContent) => {
                   if (post.reply) {
-                    return (<RedditPost key={post.id} post={post} />);
+                    return (<RedditPost key={post.id} post={post} searchTerm={searchTerm} />);
                   }
                 })) : (
                 <div>No relevant posts...</div>

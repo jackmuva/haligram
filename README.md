@@ -14,3 +14,13 @@ npm run migrate
 ```
 npm run trigger
 ```
+
+## TODOs
+- create user on login
+    - rip out getUser calls from every API call
+    - use session email
+- paginate reddit posts
+- make deletes accessbile in ui
+    - test deletes
+- implement reindexing
+    - test

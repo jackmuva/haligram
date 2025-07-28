@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
-import { firecrawlJob, Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
+import { FirecrawlJob, firecrawlJob, Instructions, instructions, redditContent, RedditContent, redditSearch, RedditSearch, RedditToken, redditToken, User, user } from './schema';
 import { and, eq } from 'drizzle-orm';
+import { pineconeService } from '@/lib/pinecone';
 
 const db = drizzle(
 	createClient({
@@ -175,6 +176,25 @@ export const updateRedditSearchStatus = async (searchId: string, status: string)
 	}
 }
 
+export const deleteRedditSearchByEmailAndSearch = async (email: string, searchId: string) => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.email, email));
+		if (selectedUser.length === 0) {
+			console.error("user not found");
+			return [];
+		}
+		const search = await db.delete(redditSearch)
+			.where(and(eq(redditSearch.userId, selectedUser[0].id),
+				eq(redditSearch.id, searchId))).returning();
+		await deleteRedditContentBySearchId(searchId);
+		return search;
+	} catch (err) {
+		console.error("failed to delete reddit searches", err);
+		throw err;
+	}
+}
+
+
 export const getInstructionsByEmail = async (email: string): Promise<Array<Instructions>> => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
@@ -263,6 +283,16 @@ export const replyRedditContent = async (postId: string, reply: string):
 	}
 }
 
+export const deleteRedditContentByPostId = async (postId: string): Promise<Array<RedditContent>> => {
+	try {
+		return await db.delete(redditContent).where(eq(redditContent.postId, postId)).returning();
+	} catch (err) {
+		console.error("Failed to get Reddit content", err);
+		throw err;
+	}
+}
+
+
 export const getRedditContentBySearchId = async (searchId: string): Promise<Array<RedditContent>> => {
 	try {
 		return await db.select().from(redditContent).where(eq(redditContent.searchId, searchId));
@@ -271,6 +301,16 @@ export const getRedditContentBySearchId = async (searchId: string): Promise<Arra
 		throw err;
 	}
 }
+
+export const deleteRedditContentBySearchId = async (searchId: string) => {
+	try {
+		return await db.delete(redditContent).where(eq(redditContent.searchId, searchId));
+	} catch (err) {
+		console.error("Failed to get Reddit content", err);
+		throw err;
+	}
+}
+
 export const getFirecrawlJobByEmail = async (email: string) => {
 	try {
 		const selectedUser = await db.select().from(user).where(eq(user.email, email));
@@ -340,6 +380,22 @@ export const updateFirecrawlJobById = async (jobId: string, status: string) => {
 		return job;
 	} catch (err) {
 		console.error("unable to create firecrawl job");
+		throw err;
+	}
+}
+
+export const deleteFirecrawlJobById = async (userId: string, jobId: string, jobUrl: string): Promise<Array<FirecrawlJob>> => {
+	try {
+		const selectedUser = await db.select().from(user).where(eq(user.id, userId));
+		if (selectedUser.length === 0) {
+			throw new Error("user not found");
+		}
+		const job = await db.delete(firecrawlJob)
+			.where(eq(firecrawlJob.jobId, jobId)).returning();
+		await pineconeService.deleteChunksInUrl({ url: jobUrl, namespaceName: selectedUser[0].email });
+		return job;
+	} catch (err) {
+		console.error("unable to delete firecrawl job");
 		throw err;
 	}
 }

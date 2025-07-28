@@ -74,6 +74,15 @@ class PineconeService {
 		const numUpserted = await namespace.upsertRecords(data);
 		return numUpserted;
 	}
+
+	public async deleteChunksInUrl({ url, namespaceName }: { url: string, namespaceName: string }) {
+		const namespace = this._pc.index(process.env.PINECONE_INDEX!).namespace(namespaceName);
+		await namespace.deleteMany({
+			/**TODO:
+			 * @see [Deleting vectors by metadata filter](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter)
+			 */
+		});
+	}
 }
 
 export const pineconeService = await PineconeService.createService();

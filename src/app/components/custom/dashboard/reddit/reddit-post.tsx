@@ -1,8 +1,9 @@
 import { Button } from "@/app/components/ui/button";
 import { RedditContent } from "@/db/schema";
 import { useState, useEffect, useRef } from "react";
+import { mutate } from "swr";
 
-export const RedditPost = ({ post }: { post: RedditContent }) => {
+export const RedditPost = ({ post, searchTerm }: { post: RedditContent, searchTerm: string }) => {
   const [expand, setExpand] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,7 +38,9 @@ export const RedditPost = ({ post }: { post: RedditContent }) => {
         data: { message: "comment posted" },
         hideProgressBar: true,
         closeButton: false,
-      })
+      });
+      const params = new URLSearchParams({ q: searchTerm });
+      mutate(`/api/reddit/get-search?${params.toString()}`)
     } else {
       // @ts-ignore
       toast(<Notification />, {
