@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
 import { FirecrawlJob } from "@/db/schema";
+import { UrlRow } from "./url-row";
 
 export const KnowledgePanel = ({ active, setActive }:
   { active: "instructions" | "knowledge" | "", setActive: (x: "instructions" | "knowledge" | "") => void }) => {
@@ -69,10 +70,7 @@ export const KnowledgePanel = ({ active, setActive }:
         {isLoading ? (<div>loading crawled urls...</div>) : (
           data.jobs.map((job: FirecrawlJob) => {
             return (
-              <div key={job.id} className="w-full flex justify-between items-center">
-                <p>{job.url}</p>
-                <p>{job.status}</p>
-              </div>
+              <UrlRow key={job.id} job={job} />
             );
           }))}
       </div>
