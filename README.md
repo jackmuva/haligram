@@ -22,5 +22,6 @@ npm run trigger
 - paginate reddit posts
 - make deletes accessbile in ui
     - test deletes
+    - implement pinecone metadata filtering deletes
 - implement reindexing
     - test
